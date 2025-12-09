@@ -1,5 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from dotenv import load_dotenv
+load_dotenv()
+
 from app.utils import (
     identify_platform,
     extract_youtube_id,
@@ -7,6 +10,8 @@ from app.utils import (
     extract_x_tweet_id,
     extract_facebook_id,
 )
+
+from app.youtube_fetcher import fetch_youtube_comments
 
 app = FastAPI(title="Comments Analyzer API")
 
@@ -51,3 +56,22 @@ def parse_link(payload: LinkIn):
     # Unknown / unsupported
     result["id"] = None
     return result
+
+@app.post("/fetch-comments")
+def fetch_comments(payload: LinkIn):
+    url = payload.url.strip()
+    platform = identify_platform(url)
+
+    if platform != "youtube":
+        raise HTTPException(status_code=400, detail="Only YouTube supported for now")
+
+    video_id = extract_youtube_id(url)
+    comments = fetch_youtube_comments(video_id)
+
+    return {
+        "platform": platform,
+        "video_id": video_id,
+        "total_comments": len(comments),
+        "comments": comments
+    }
+
