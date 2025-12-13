@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-# Load environment variables (.env)
+# Load .env variables
 load_dotenv()
 
 # Import utilities
@@ -21,10 +22,26 @@ from app.youtube_fetcher import fetch_youtube_comments
 from app.analyzer import analyze_sentiments, summarize_comments
 
 
+# ---------------------------------------------------
+# FASTAPI APP
+# ---------------------------------------------------
 app = FastAPI(title="Comments Analyzer API")
 
+# ---------------------------------------------------
+# ENABLE CORS FOR REACT (IMPORTANT)
+# ---------------------------------------------------
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],          # allow all origins (React frontend included)
+    allow_credentials=True,
+    allow_methods=["*"],          # IMPORTANT — allows OPTIONS, POST, GET, etc.
+    allow_headers=["*"],          # allow Content-Type, etc.
+)
 
-# Model for input request
+
+# ---------------------------------------------------
+# REQUEST MODEL
+# ---------------------------------------------------
 class LinkIn(BaseModel):
     url: str
 
@@ -34,9 +51,9 @@ def root():
     return {"message": "API is running"}
 
 
-# ---------------------------
-#  LINK PARSING ENDPOINT
-# ---------------------------
+# ---------------------------------------------------
+# LINK PARSING ENDPOINT
+# ---------------------------------------------------
 @app.post("/parse-link")
 def parse_link(payload: LinkIn):
     url = payload.url.strip()
@@ -68,14 +85,14 @@ def parse_link(payload: LinkIn):
         result["id_type"] = "post_id"
         return result
 
-    # Unknown platform
+    # Unknown
     result["id"] = None
     return result
 
 
-# ---------------------------
-#  FETCH YOUTUBE COMMENTS
-# ---------------------------
+# ---------------------------------------------------
+# FETCH YOUTUBE COMMENTS
+# ---------------------------------------------------
 @app.post("/fetch-comments")
 def fetch_comments(payload: LinkIn):
     url = payload.url.strip()
@@ -85,8 +102,6 @@ def fetch_comments(payload: LinkIn):
         raise HTTPException(status_code=400, detail="Only YouTube supported for now")
 
     video_id = extract_youtube_id(url)
-
-    # Fetch raw comments
     comments = fetch_youtube_comments(video_id)
 
     return {
@@ -97,9 +112,9 @@ def fetch_comments(payload: LinkIn):
     }
 
 
-# ---------------------------
-#  FULL ANALYSIS ENDPOINT
-# ---------------------------
+# ---------------------------------------------------
+# FULL ANALYSIS ENDPOINT
+# ---------------------------------------------------
 @app.post("/analyze")
 def analyze(payload: LinkIn):
     url = payload.url.strip()
