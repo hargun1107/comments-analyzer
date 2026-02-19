@@ -3,10 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-# Load .env variables
 load_dotenv()
 
-# Import utilities
 from app.utils import (
     identify_platform,
     extract_youtube_id,
@@ -15,33 +13,22 @@ from app.utils import (
     extract_facebook_id,
 )
 
-# YouTube comment fetcher
 from app.youtube_fetcher import fetch_youtube_comments
 
-# Sentiment + summarization
 from app.analyzer import analyze_sentiments, summarize_comments
 
 
-# ---------------------------------------------------
-# FASTAPI APP
-# ---------------------------------------------------
 app = FastAPI(title="Comments Analyzer API")
 
-# ---------------------------------------------------
-# ENABLE CORS FOR REACT (IMPORTANT)
-# ---------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],          # allow all origins (React frontend included)
+    allow_origins=["*"],          
     allow_credentials=True,
-    allow_methods=["*"],          # IMPORTANT — allows OPTIONS, POST, GET, etc.
-    allow_headers=["*"],          # allow Content-Type, etc.
+    allow_methods=["*"],          
+    allow_headers=["*"],      
 )
 
 
-# ---------------------------------------------------
-# REQUEST MODEL
-# ---------------------------------------------------
 class LinkIn(BaseModel):
     url: str
 
@@ -51,9 +38,6 @@ def root():
     return {"message": "API is running"}
 
 
-# ---------------------------------------------------
-# LINK PARSING ENDPOINT
-# ---------------------------------------------------
 @app.post("/parse-link")
 def parse_link(payload: LinkIn):
     url = payload.url.strip()
@@ -61,38 +45,30 @@ def parse_link(payload: LinkIn):
 
     result = {"platform": platform, "url": url}
 
-    # YouTube
     if platform == "youtube":
         result["id"] = extract_youtube_id(url)
         result["id_type"] = "video_id"
         return result
 
-    # Instagram
     if platform == "instagram":
         result["id"] = extract_instagram_id(url)
         result["id_type"] = "shortcode"
         return result
 
-    # Twitter / X
     if platform == "x":
         result["id"] = extract_x_tweet_id(url)
         result["id_type"] = "tweet_id"
         return result
 
-    # Facebook
     if platform == "facebook":
         result["id"] = extract_facebook_id(url)
         result["id_type"] = "post_id"
         return result
 
-    # Unknown
     result["id"] = None
     return result
 
 
-# ---------------------------------------------------
-# FETCH YOUTUBE COMMENTS
-# ---------------------------------------------------
 @app.post("/fetch-comments")
 def fetch_comments(payload: LinkIn):
     url = payload.url.strip()
@@ -112,9 +88,6 @@ def fetch_comments(payload: LinkIn):
     }
 
 
-# ---------------------------------------------------
-# FULL ANALYSIS ENDPOINT
-# ---------------------------------------------------
 @app.post("/analyze")
 def analyze(payload: LinkIn):
     url = payload.url.strip()
@@ -125,12 +98,9 @@ def analyze(payload: LinkIn):
 
     video_id = extract_youtube_id(url)
     comments = fetch_youtube_comments(video_id)
-
-    # Sentiment stats
-    sentiment = analyze_sentiments(comments)
-
-    # Summary of all comments
-    summary = summarize_comments(comments)
+    comment_texts = [c["text"] for c in comments if c.get("text")]
+    sentiment = analyze_sentiments(comment_texts)
+    summary = summarize_comments(comment_texts)
 
     return {
         "platform": platform,

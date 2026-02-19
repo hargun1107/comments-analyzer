@@ -1,22 +1,18 @@
 from transformers import pipeline
 
-# Load sentiment model once
 sentiment_model = pipeline("sentiment-analysis")
-
-# Summarizer model
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
 
-def analyze_sentiments(comments):
+def analyze_sentiments(comment_texts):
     labels = []
 
-    for c in comments:
-        text = c.get("text", "")
+    for text in comment_texts:
         if not text:
             continue
 
         try:
-            result = sentiment_model(text[:500])[0]  # limit length
+            result = sentiment_model(text[:500])[0]
             labels.append(result["label"])
         except:
             labels.append("NEUTRAL")
@@ -35,13 +31,13 @@ def analyze_sentiments(comments):
     }
 
 
-def summarize_comments(comments):
-    text = " ".join(c.get("text", "") for c in comments)
+def summarize_comments(comment_texts):
+    text = " ".join(comment_texts)
 
     if len(text) < 50:
         return "Not enough content to summarize."
 
-    text = text[:1000]  # keep within model limits
+    text = text[:1000]
 
     summary = summarizer(
         text,
