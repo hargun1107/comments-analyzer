@@ -98,9 +98,9 @@ def analyze(payload: LinkIn):
 
     video_id = extract_youtube_id(url)
     comments = fetch_youtube_comments(video_id)
-    comment_texts = [c["text"] for c in comments if c.get("text")]
-    sentiment = analyze_sentiments(comment_texts)
-    summary = summarize_comments(comment_texts)
+
+    sentiment = analyze_sentiments(comments)
+    summary = summarize_comments(comments)
 
     return {
         "platform": platform,
