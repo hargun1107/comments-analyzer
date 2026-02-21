@@ -1,107 +1,101 @@
 body {
   margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(135deg, #141e30, #243b55);
-  color: white;
-}
-
-.container {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #74ebd5, #acb6e5);
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  color: #1f2937;
 }
 
-.card {
-  background: #1f2a40;
+.container {
+  width: 100%;
+  max-width: 800px;
+  background: white;
   padding: 40px;
   border-radius: 16px;
-  width: 600px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-}
-
-h1 {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   text-align: center;
-  margin-bottom: 30px;
 }
 
-.input-group {
+.title {
+  margin-bottom: 30px;
+  font-size: 32px;
+}
+
+.input-section {
   display: flex;
   gap: 10px;
+  margin-bottom: 20px;
 }
 
-input {
+.input-section input {
   flex: 1;
   padding: 12px;
   border-radius: 8px;
-  border: none;
-  outline: none;
+  border: 1px solid #ccc;
+  font-size: 16px;
 }
 
-button {
+.input-section button {
   padding: 12px 20px;
   border-radius: 8px;
   border: none;
-  background: #00c6ff;
-  color: black;
+  background: #2563eb;
+  color: white;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.3s;
+  transition: 0.2s ease;
 }
 
-button:hover {
-  background: #00a3cc;
+.input-section button:hover {
+  background: #1e40af;
 }
 
-button:disabled {
+.input-section button:disabled {
   background: gray;
   cursor: not-allowed;
 }
 
-.loader {
-  margin: 20px auto;
-  border: 4px solid #444;
-  border-top: 4px solid #00c6ff;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.results {
-  margin-top: 30px;
-}
-
-.bar {
+.error {
+  background: #ef4444;
+  color: white;
   padding: 10px;
-  border-radius: 6px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.result-card {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.sentiment {
+  padding: 12px;
+  border-radius: 8px;
   margin-bottom: 10px;
   font-weight: bold;
 }
 
 .positive {
-  background: #2ecc71;
-  color: black;
+  background: #22c55e;
+  color: white;
 }
 
 .negative {
-  background: #e74c3c;
+  background: #ef4444;
+  color: white;
 }
 
 .neutral {
-  background: #f1c40f;
-  color: black;
+  background: #facc15;
 }
 
 .summary-box {
-  background: #2b3b5c;
+  background: #f1f5f9;
   padding: 15px;
   border-radius: 8px;
   margin-top: 10px;
+  line-height: 1.6;
 }
