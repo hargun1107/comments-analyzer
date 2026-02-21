@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./App.css";
 
 function App() {
   const [url, setUrl] = useState("");
@@ -29,56 +30,53 @@ function App() {
   };
 
   return (
-    <div style={{ padding: "40px", fontFamily: "Arial" }}>
-      <h1>Comments Analyzer</h1>
+    <div className="container">
+      <div className="card">
+        <h1>Youtube Comments Analyzer</h1>
 
-      <input
-        type="text"
-        placeholder="Paste YouTube/Instagram/Twitter/Facebook link"
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-        style={{
-          padding: "10px",
-          width: "400px",
-          borderRadius: "8px",
-          border: "1px solid #aaa",
-        }}
-      />
+        <div className="input-group">
+          <input
+            type="text"
+            placeholder="Paste YouTube link"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
 
-      <button
-        onClick={handleAnalyze}
-        style={{
-          padding: "10px 20px",
-          marginLeft: "10px",
-          borderRadius: "8px",
-          background: "black",
-          color: "white",
-          border: "none",
-        }}
-      >
-        Analyze
-      </button>
-
-      {loading && <p>Analyzing…</p>}
-
-      {result && (
-        <div style={{ marginTop: "30px" }}>
-          <h2>Results</h2>
-
-          <p><b>Platform:</b> {result.platform}</p>
-          <p><b>Total Comments:</b> {result.total_comments}</p>
-
-          <h3>Sentiment Breakdown</h3>
-          <ul>
-            <li>Positive: {result.sentiment_analysis.positive}</li>
-            <li>Negative: {result.sentiment_analysis.negative}</li>
-            <li>Neutral: {result.sentiment_analysis.neutral}</li>
-          </ul>
-
-          <h3>Summary</h3>
-          <p>{result.summary}</p>
+          <button onClick={handleAnalyze} disabled={loading}>
+            {loading ? "Analyzing..." : "Analyze"}
+          </button>
         </div>
-      )}
+
+        {loading && <div className="loader"></div>}
+
+        {result && (
+          <div className="results">
+            <h2>Results</h2>
+
+            <p><strong>Platform:</strong> {result.platform}</p>
+            <p><strong>Total Comments:</strong> {result.total_comments}</p>
+
+            <h3>Sentiment Breakdown</h3>
+
+            <div className="bar positive">
+              Positive: {result.sentiment_analysis.positive}%
+            </div>
+
+            <div className="bar negative">
+              Negative: {result.sentiment_analysis.negative}%
+            </div>
+
+            <div className="bar neutral">
+              Neutral: {result.sentiment_analysis.neutral}%
+            </div>
+
+            <h3>Summary</h3>
+            <div className="summary-box">
+              {result.summary}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
